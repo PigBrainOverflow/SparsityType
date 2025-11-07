@@ -34,4 +34,4 @@ for d in densities:
 for d, t_d, t_s in zip(densities, dense_times, sparse_times):
     if not np.isnan(t_d) and t_d < t_s:
         print(f"\n⚡ Dense becomes faster than Sparse at density ≈ {d:.4f}")
-        break
+        break  
