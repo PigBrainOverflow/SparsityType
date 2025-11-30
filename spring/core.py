@@ -69,6 +69,17 @@ class NDArray:
         array._data = np.array(data)    # default to dense representation
         return array
 
+    @classmethod
+    def zeros(cls, shape: tuple[int, ...], sparse: bool = False) -> NDArray:
+        array = cls()
+        if sparse:
+            array._data = sp.csr_matrix(shape)
+            array._nz_lb = array._nz_ub = 0
+        else:
+            array._data = np.zeros(shape)
+            array._nz_lb = array._nz_ub = 0
+        return array
+
     def _adapt(self):
         if self._data is None:
             return
@@ -109,10 +120,10 @@ class NDArray:
             raise ValueError("Data is not initialized.")
         res_data = self._data + scalar
         if isinstance(res_data, np.ndarray):
-            return NDArray.from_dense(res_data)
+            res = NDArray.from_dense(res_data)
         elif isinstance(res_data, sp.spmatrix):
-            return NDArray.from_sparse(res_data)
-        raise ValueError("Unsupported data type after addition.")
+            res = NDArray.from_sparse(res_data)
+        return res
 
     def _add_array(self, other: NDArray) -> NDArray:
         self._adapt()
@@ -135,3 +146,70 @@ class NDArray:
         if isinstance(other, NDArray):
             return self._add_array(other)
         return self._add_scalar(other)
+
+    def __radd__(self, other: Any) -> NDArray:
+        return self + other
+
+    def _mul_scalar(self, scalar: Any) -> NDArray:
+        self._adapt()
+        if self._data is None:
+            raise ValueError("Data is not initialized.")
+        res_data = self._data * scalar
+        if isinstance(res_data, np.ndarray):
+            res = NDArray.from_dense(res_data)
+        elif isinstance(res_data, sp.spmatrix):
+            res = NDArray.from_sparse(res_data)
+        # estimate nonzero bounds
+        if scalar == 0:
+            res._nz_lb = res._nz_ub = 0
+        else:
+            res._nz_lb = self._nz_lb
+            res._nz_ub = self._nz_ub
+        return res
+
+    def _mul_array(self, other: NDArray) -> NDArray:
+        # element-wise multiplication
+        self._adapt()
+        other._adapt()
+        if self._data is None or other._data is None:
+            raise ValueError("Data is not initialized.")
+        if self.shape != other.shape:
+            raise ValueError("Shapes do not match for multiplication.")
+        res_data = cast(np.ndarray, self._data) * cast(np.ndarray, other._data) # type: ignore
+        if isinstance(res_data, np.ndarray):
+            res = NDArray.from_dense(res_data)
+        elif isinstance(res_data, sp.spmatrix):
+            res = NDArray.from_sparse(res_data)
+        # estimate nonzero bounds
+        if self._nz_lb is not None and other._nz_lb is not None:
+            res._nz_lb = max(self._nz_lb, other._nz_lb)  # conservative estimate
+        else:
+            res._nz_lb = None
+        if self._nz_ub is not None and other._nz_ub is not None:
+            res._nz_ub = min(self._nz_ub, other._nz_ub)  # conservative estimate
+        else:
+            res._nz_ub = None
+        return res
+
+    def __mul__(self, other: Any) -> NDArray:
+        if isinstance(other, NDArray):
+            return self._mul_array(other)
+        return self._mul_scalar(other)
+
+    def __rmul__(self, other: Any) -> NDArray:
+        return self * other
+
+    def __matmul__(self, other: NDArray) -> NDArray:
+        self._adapt()
+        other._adapt()
+        if self._data is None or other._data is None:
+            raise ValueError("Data is not initialized.")
+        if self.shape[1] != other.shape[0]:
+            raise ValueError("Shapes do not align for matrix multiplication.")
+        res_data = cast(np.ndarray, self._data) @ cast(np.ndarray, other._data) # type: ignore
+        if isinstance(res_data, np.ndarray):
+            res = NDArray.from_dense(res_data)
+        elif isinstance(res_data, sp.spmatrix):
+            res = NDArray.from_sparse(res_data)
+        # no good way to estimate nonzero bounds for matmul
+        return res
