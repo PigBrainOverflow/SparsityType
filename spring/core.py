@@ -6,7 +6,7 @@ import scipy.sparse as sp
 
 class NDArray:
     THRESHOLD_DENSITY = 0.4  # Threshold density to switch between dense and sparse
-    DEBUG = True
+    DEBUG = False
     # DENSE: type = np.ndarray
     # SPARSE: type = sp.spmatrix
     _data: np.ndarray | sp.spmatrix | None
@@ -51,6 +51,16 @@ class NDArray:
         self._nz_ub = None
         self._nz_lb = None
 
+    def to_dense(self) -> np.ndarray:
+        if self._data is None:
+            raise ValueError("Data is not initialized.")
+        return self._data if isinstance(self._data, np.ndarray) else self._data.todense()
+
+    def to_sparse(self) -> sp.spmatrix:
+        if self._data is None:
+            raise ValueError("Data is not initialized.")
+        return self._data if isinstance(self._data, sp.spmatrix) else sp.csr_matrix(self._data)
+
     @classmethod
     def from_dense(cls, data: np.ndarray) -> NDArray:
         array = cls()
@@ -78,6 +88,13 @@ class NDArray:
         else:
             array._data = np.zeros(shape)
             array._nz_lb = array._nz_ub = 0
+        return array
+
+    @classmethod
+    def eye(cls, size: int, diag_val: Any) -> NDArray:
+        array = cls()
+        array._data = sp.eye(size, format="csr") * diag_val
+        array._nz_lb = array._nz_ub = size
         return array
 
     def _adapt(self):
@@ -115,15 +132,10 @@ class NDArray:
     Arithmetic Operations
     """
     def _add_scalar(self, scalar: Any) -> NDArray:
-        self._adapt()
         if self._data is None:
             raise ValueError("Data is not initialized.")
-        res_data = self._data + scalar
-        if isinstance(res_data, np.ndarray):
-            res = NDArray.from_dense(res_data)
-        elif isinstance(res_data, sp.spmatrix):
-            res = NDArray.from_sparse(res_data)
-        return res
+        res_data = (self._data if isinstance(self._data, np.ndarray) else self._data.todense()) + scalar
+        return NDArray.from_dense(res_data)
 
     def _add_array(self, other: NDArray) -> NDArray:
         self._adapt()

@@ -1,0 +1,14 @@
+=== matmul with size 100x100 ===
+Spring avg time: 0.000937 s
+SciPy avg time: 0.004056 s
+NumPy avg time: 0.000069 s
+
+=== matmul with size 200x200 ===
+Spring avg time: 0.000256 s
+SciPy avg time: 0.020562 s
+NumPy avg time: 0.000140 s
+
+=== matmul with size 500x500 ===
+Spring avg time: 0.001524 s
+SciPy avg time: 0.280268 s
+NumPy avg time: 0.001635 s

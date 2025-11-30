@@ -1,0 +1,44 @@
+=== addchain with size 100x100 and length 10 ===
+Spring avg time: 0.000308 s
+SciPy avg time: 0.001158 s
+NumPy avg time: 0.000054 s
+
+=== addchain with size 200x200 and length 10 ===
+Spring avg time: 0.000977 s
+SciPy avg time: 0.002590 s
+NumPy avg time: 0.000178 s
+
+=== addchain with size 500x500 and length 10 ===
+Spring avg time: 0.006216 s
+SciPy avg time: 0.011854 s
+NumPy avg time: 0.001868 s
+
+=== addchain with size 100x100 and length 20 ===
+Spring avg time: 0.000613 s
+SciPy avg time: 0.002266 s
+NumPy avg time: 0.000108 s
+
+=== addchain with size 200x200 and length 20 ===
+Spring avg time: 0.001964 s
+SciPy avg time: 0.005597 s
+NumPy avg time: 0.000367 s
+
+=== addchain with size 500x500 and length 20 ===
+Spring avg time: 0.011629 s
+SciPy avg time: 0.019799 s
+NumPy avg time: 0.003363 s
+
+=== addchain with size 100x100 and length 50 ===
+Spring avg time: 0.001328 s
+SciPy avg time: 0.004998 s
+NumPy avg time: 0.000242 s
+
+=== addchain with size 200x200 and length 50 ===
+Spring avg time: 0.004951 s
+SciPy avg time: 0.013901 s
+NumPy avg time: 0.000957 s
+
+=== addchain with size 500x500 and length 50 ===
+Spring avg time: 0.027556 s
+SciPy avg time: 0.050526 s
+NumPy avg time: 0.008274 s

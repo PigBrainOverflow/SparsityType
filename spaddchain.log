@@ -1,0 +1,44 @@
+=== spaddchain with size 100x100, density 0.01 and length 100 ===
+Spring avg time: 0.004952 s
+SciPy avg time: 0.006313 s
+NumPy avg time: 0.000590 s
+
+=== spaddchain with size 200x200, density 0.01 and length 100 ===
+Spring avg time: 0.010069 s
+SciPy avg time: 0.013510 s
+NumPy avg time: 0.002031 s
+
+=== spaddchain with size 500x500, density 0.01 and length 100 ===
+Spring avg time: 0.031350 s
+SciPy avg time: 0.040744 s
+NumPy avg time: 0.016860 s
+
+=== spaddchain with size 100x100, density 0.005 and length 100 ===
+Spring avg time: 0.007182 s
+SciPy avg time: 0.005875 s
+NumPy avg time: 0.000605 s
+
+=== spaddchain with size 200x200, density 0.005 and length 100 ===
+Spring avg time: 0.011243 s
+SciPy avg time: 0.009905 s
+NumPy avg time: 0.002075 s
+
+=== spaddchain with size 500x500, density 0.005 and length 100 ===
+Spring avg time: 0.025844 s
+SciPy avg time: 0.024963 s
+NumPy avg time: 0.016904 s
+
+=== spaddchain with size 100x100, density 0.001 and length 100 ===
+Spring avg time: 0.006240 s
+SciPy avg time: 0.005156 s
+NumPy avg time: 0.000615 s
+
+=== spaddchain with size 200x200, density 0.001 and length 100 ===
+Spring avg time: 0.008171 s
+SciPy avg time: 0.006927 s
+NumPy avg time: 0.002143 s
+
+=== spaddchain with size 500x500, density 0.001 and length 100 ===
+Spring avg time: 0.010109 s
+SciPy avg time: 0.008909 s
+NumPy avg time: 0.017624 s

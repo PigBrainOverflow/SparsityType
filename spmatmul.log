@@ -1,0 +1,44 @@
+=== spmatmul with size 1000x1000 and density 0.01 ===
+Spring avg time: 0.001415 s
+SciPy avg time: 0.001236 s
+NumPy avg time: 0.008009 s
+
+=== spmatmul with size 2000x2000 and density 0.01 ===
+Spring avg time: 0.007494 s
+SciPy avg time: 0.006865 s
+NumPy avg time: 0.057937 s
+
+=== spmatmul with size 5000x5000 and density 0.01 ===
+Spring avg time: 0.145472 s
+SciPy avg time: 0.147451 s
+NumPy avg time: 0.828139 s
+
+=== spmatmul with size 1000x1000 and density 0.005 ===
+Spring avg time: 0.000525 s
+SciPy avg time: 0.000470 s
+NumPy avg time: 0.006662 s
+
+=== spmatmul with size 2000x2000 and density 0.005 ===
+Spring avg time: 0.001942 s
+SciPy avg time: 0.001779 s
+NumPy avg time: 0.057215 s
+
+=== spmatmul with size 5000x5000 and density 0.005 ===
+Spring avg time: 0.027462 s
+SciPy avg time: 0.027121 s
+NumPy avg time: 0.828003 s
+
+=== spmatmul with size 1000x1000 and density 0.001 ===
+Spring avg time: 0.000198 s
+SciPy avg time: 0.000143 s
+NumPy avg time: 0.006652 s
+
+=== spmatmul with size 2000x2000 and density 0.001 ===
+Spring avg time: 0.000325 s
+SciPy avg time: 0.000253 s
+NumPy avg time: 0.059615 s
+
+=== spmatmul with size 5000x5000 and density 0.001 ===
+Spring avg time: 0.001664 s
+SciPy avg time: 0.001507 s
+NumPy avg time: 0.826712 s
