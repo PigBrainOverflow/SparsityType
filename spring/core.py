@@ -65,12 +65,55 @@ class NDArray:
     @classmethod
     def from_obj(cls, data: Any) -> NDArray:
         array = cls()
-        array._data = np.array(data)    # Default to dense representation
+        array._data = np.array(data)    # default to dense representation
         return array
 
-    def __add__(self, other: NDArray) -> NDArray:
-        if not isinstance(other, NDArray):
-            return NotImplemented
-        if self.shape != other.shape:
-            raise ValueError("Shapes of the arrays must be the same for addition.")
-        # check self's density
+    def _adapt(self):
+        if self._data is None:
+            return
+        if isinstance(self._data, np.ndarray):  # dense
+            if self._nz_ub is None or self._nz_ub > self.size * self.THRESHOLD_DENSITY:
+                # cannot determine whether it is too sparse
+                self.count_nz()
+            if self._nz_ub is not None and self._nz_ub <= self.size * self.THRESHOLD_DENSITY:
+                self._sparsify()
+        elif isinstance(self._data, sp.spmatrix):  # sparse
+            if self._nz_lb is None or self._nz_lb < self.size * self.THRESHOLD_DENSITY:
+                # cannot determine whether it is too dense
+                self.count_nz()
+            if self._nz_lb is not None and self._nz_lb > self.size * self.THRESHOLD_DENSITY:
+                self._densify()
+
+    def _densify(self):
+        if isinstance(self._data, sp.spmatrix):
+            self._data = self._data.todense()
+
+    def _sparsify(self):
+        if isinstance(self._data, np.ndarray) and self._data.ndim == 2: # only 2D arrays
+            self._data = sp.csr_matrix(self._data)
+
+    """
+    Arithmetic Operations
+    """
+    def _add_scalar(self, scalar: Any) -> NDArray:
+        self._adapt()
+        if self._data is None:
+            raise ValueError("Data is not initialized.")
+        res_data = self._data + scalar
+        if isinstance(res_data, np.ndarray):
+            return NDArray.from_dense(res_data)
+        elif isinstance(res_data, sp.spmatrix):
+            return NDArray.from_sparse(res_data)
+        raise ValueError("Unsupported data type after addition.")
+
+    def _add_array(self, other: NDArray) -> NDArray:
+        self._adapt()
+        other._adapt()
+        if self._data is None or other._data is None:
+            raise ValueError("Data is not initialized.")
+        res_data = self._data + other._data
+        if isinstance(res_data, np.ndarray):
+            return NDArray.from_dense(res_data)
+        elif isinstance(res_data, sp.spmatrix):
+            return NDArray.from_sparse(res_data)
+        raise ValueError("Unsupported data type after addition.")
