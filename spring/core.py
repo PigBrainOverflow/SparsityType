@@ -1,11 +1,12 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, cast
 import numpy as np
 import scipy.sparse as sp
 
 
 class NDArray:
     THRESHOLD_DENSITY = 0.4  # Threshold density to switch between dense and sparse
+    DEBUG = True
     # DENSE: type = np.ndarray
     # SPARSE: type = sp.spmatrix
     _data: np.ndarray | sp.spmatrix | None
@@ -87,10 +88,17 @@ class NDArray:
     def _densify(self):
         if isinstance(self._data, sp.spmatrix):
             self._data = self._data.todense()
+            if self.DEBUG:
+                print("Densified")
 
     def _sparsify(self):
         if isinstance(self._data, np.ndarray) and self._data.ndim == 2: # only 2D arrays
             self._data = sp.csr_matrix(self._data)
+            if self.DEBUG:
+                print("Sparsified")
+
+    def __repr__(self) -> str:
+        return f"NDArray(shape={self.shape}, dtype={self.dtype}, nz_lb={self._nz_lb}, nz_ub={self._nz_ub}), sparse={isinstance(self._data, sp.spmatrix)}" + f"\ndata:\n{self._data}"
 
     """
     Arithmetic Operations
@@ -111,9 +119,19 @@ class NDArray:
         other._adapt()
         if self._data is None or other._data is None:
             raise ValueError("Data is not initialized.")
-        res_data = self._data + other._data
+        if self.shape != other.shape:
+            raise ValueError("Shapes do not match for addition.")
+        res_data = cast(np.ndarray, self._data) + cast(np.ndarray, other._data) # type: ignore
         if isinstance(res_data, np.ndarray):
-            return NDArray.from_dense(res_data)
+            res = NDArray.from_dense(res_data)
         elif isinstance(res_data, sp.spmatrix):
-            return NDArray.from_sparse(res_data)
-        raise ValueError("Unsupported data type after addition.")
+            res = NDArray.from_sparse(res_data)
+        # estimate nonzero bounds
+        res._nz_ub = self._nz_ub + other._nz_ub if self._nz_ub is not None and other._nz_ub is not None else None
+        res._nz_lb = abs(self._nz_lb - other._nz_lb) if self._nz_lb is not None and other._nz_lb is not None else None
+        return res
+
+    def __add__(self, other: Any) -> NDArray:
+        if isinstance(other, NDArray):
+            return self._add_array(other)
+        return self._add_scalar(other)
